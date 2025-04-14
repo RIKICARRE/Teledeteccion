@@ -13,12 +13,22 @@
 % Los índices se calculan usando los datos normalizados sin cortes, 
 % y para la visualización se aplica un mapeo a RGB utilizando el colormap
 % interpolado.
+%
+% MODIFICACIÓN: Ahora las imágenes NDVI también se guardan en alta resolución
+% en una carpeta separada llamada "NDVIs"
 
 %% 1. Definir la ruta principal y la lista de subcarpetas (fechas)
 rutaPrincipal = 'Fotos_T';
 subcarpetas = { '21-06-2017', '21-06-2019', '24-06-2024', '26-06-2017', ...
                 '26-06-2018', '30-06-2020', '30-06-2021', '30-06-2022', ...
                 '30-06-2023', '31-03-2025'};
+
+% Crear carpeta para guardar los NDVIs si no existe
+carpetaDestino = 'NDVIs';
+if ~exist(carpetaDestino, 'dir')
+    mkdir(carpetaDestino);
+    fprintf('Se ha creado la carpeta %s para guardar las imágenes NDVI\n', carpetaDestino);
+end
 
 %% 2. Función auxiliar: hex2rgb
 % Convierte un valor hexadecimal numérico (e.g., 0x0c0c0c) en un vector RGB [r,g,b] normalizado a [0,1].
@@ -62,9 +72,12 @@ ramp_moisture_values = [-0.8, -0.24, -0.032, 0.032, 0.24, 0.8];
 ramp_moisture_hex = [...
     0x800000; 0xff0000; 0xffff00; 0x00ffff; 0x0000ff; 0x000080];
 
-% Generar los colormaps (256 colores):
+% Generar los colormaps (256 colores para visualización):
 cmap_ndvi = generateColormap(ramp_ndvi_values, ramp_ndvi_hex, 256, [-0.5, 1]);
 cmap_moisture = generateColormap(ramp_moisture_values, ramp_moisture_hex, 256, [-0.8, 0.8]);
+
+% Generar colormap NDVI de alta resolución para guardar imágenes (1024 colores):
+cmap_ndvi_hires = generateColormap(ramp_ndvi_values, ramp_ndvi_hex, 1024, [-0.5, 1]);
 
 %% 5. Procesar cada subcarpeta (cada fecha)
 for idx = 1:length(subcarpetas)
@@ -157,4 +170,27 @@ for idx = 1:length(subcarpetas)
     title(['SWIR Composite - ' subcarpetas{idx}]);
     
     drawnow;
+    
+    %% 9. NUEVO: Guardar imagen NDVI en alta resolución en la carpeta NDVIs
+    % Generar una versión de alta resolución del NDVI
+    NDVI_hires_index = gray2ind(NDVI_img, 1024); % Mayor resolución de color
+    NDVI_hires_rgb = ind2rgb(NDVI_hires_index, cmap_ndvi_hires);
+    
+    % Convertir a formato uint8 para guardar como PNG
+    NDVI_hires_rgb_8bit = im2uint8(NDVI_hires_rgb);
+    
+    % Definir el nombre del archivo de salida
+    nombreArchivo = sprintf('NDVI_%s.png', subcarpetas{idx});
+    rutaArchivo = fullfile(carpetaDestino, nombreArchivo);
+    
+    % Guardar la imagen NDVI en formato PNG (sin especificar Quality que es solo para JPEG)
+    imwrite(NDVI_hires_rgb_8bit, rutaArchivo, 'PNG');
+    fprintf('NDVI guardado en alta resolución: %s\n', rutaArchivo);
+    
+    % También guardar archivo de datos en formato .mat para análisis posteriores
+    rutaMatFile = fullfile(carpetaDestino, sprintf('NDVI_data_%s.mat', subcarpetas{idx}));
+    save(rutaMatFile, 'NDVI');
+    fprintf('Datos brutos NDVI guardados en: %s\n', rutaMatFile);
 end
+
+fprintf('Proceso completado. Las imágenes NDVI se han guardado en la carpeta %s\n', carpetaDestino);
