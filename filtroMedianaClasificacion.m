@@ -159,18 +159,18 @@ function imagenRGB = categoriasARGB(categorias)
     imagenRGB(:,:,2) = imagenRGB(:,:,2) + mascaraAgua * 0.2;
     imagenRGB(:,:,3) = imagenRGB(:,:,3) + mascaraAgua * 0.8;
     
-    % Desnudo/marchito (verde oscuro)
-    imagenRGB(:,:,1) = imagenRGB(:,:,1) + mascaraMarchito * 0;
-    imagenRGB(:,:,2) = imagenRGB(:,:,2) + mascaraMarchito * 0.6;
-    imagenRGB(:,:,3) = imagenRGB(:,:,3) + mascaraMarchito * 0;
+    % Desnudo/marchito (marrón/beige)
+    imagenRGB(:,:,1) = imagenRGB(:,:,1) + mascaraMarchito * 0.8;
+    imagenRGB(:,:,2) = imagenRGB(:,:,2) + mascaraMarchito * 0.7;
+    imagenRGB(:,:,3) = imagenRGB(:,:,3) + mascaraMarchito * 0.3;
     
     % Vegetación media (verde claro)
     imagenRGB(:,:,1) = imagenRGB(:,:,1) + mascaraVegMedia * 0.4;
     imagenRGB(:,:,2) = imagenRGB(:,:,2) + mascaraVegMedia * 0.8;
     imagenRGB(:,:,3) = imagenRGB(:,:,3) + mascaraVegMedia * 0.4;
     
-    % Vegetación densa (amarillo/beige)
-    imagenRGB(:,:,1) = imagenRGB(:,:,1) + mascaraVegDensa * 0.8;
-    imagenRGB(:,:,2) = imagenRGB(:,:,2) + mascaraVegDensa * 0.8;
-    imagenRGB(:,:,3) = imagenRGB(:,:,3) + mascaraVegDensa * 0.2;
+    % Vegetación densa (verde oscuro)
+    imagenRGB(:,:,1) = imagenRGB(:,:,1) + mascaraVegDensa * 0;
+    imagenRGB(:,:,2) = imagenRGB(:,:,2) + mascaraVegDensa * 0.6;
+    imagenRGB(:,:,3) = imagenRGB(:,:,3) + mascaraVegDensa * 0;
 end
